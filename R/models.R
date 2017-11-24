@@ -54,18 +54,24 @@ predict_model.default <- function(x, newdata, type, ...) {
   as.data.frame(p)
 }
 predict_model.WrappedModel <- function(x, newdata, type, ...) {
+  if (!requireNamespace('mlr', quietly = TRUE)) {
+    stop('mlr must be available when working with WrappedModel models')
+  }
+  p <- predict(x, newdata = newdata, ...)
   type2 <- switch(
     type,
-    raw = 'response',
-    prob = 'prob',
+    raw = data.frame(Response = mlr::getPredictionResponse(p), stringsAsFactors = FALSE),
+    prob = mlr::getPredictionProbabilities(p, p$task.desc$class.levels),
     stop('Type must be either "raw" or "prob"', call. = FALSE)
   )
-  x$learner <- mlr::setPredictType(x$learner, type2)
-  p <- predict(x, newdata = newdata, ...)
-  if (type == 'raw') p <- data.frame(Response = p, stringsAsFactors = FALSE)
-  p
 }
 predict_model.xgb.Booster <- function(x, newdata, type, ...) {
+  if (!requireNamespace('xgboost', quietly = TRUE)) {
+    stop('The xgboost package is required for predicting xgboost models')
+  }
+  if(is.data.frame(newdata)){
+    newdata <- xgboost::xgb.DMatrix(as.matrix(newdata))
+  }
   p <- data.frame(predict(x, newdata = newdata, reshape = TRUE, ...), stringsAsFactors = FALSE)
   if (type == 'raw') {
     names(p) <- 'Response'
@@ -86,6 +92,22 @@ predict_model.lda <- function(x, newdata, type, ...) {
     raw = data.frame(Response = res$class, stringsAsFactors = FALSE),
     prob = as.data.frame(res$posterior, check.names = FALSE)
   )
+}
+predict_model.H2OModel <- function(x, newdata, type, ...){
+    if (!requireNamespace('h2o', quietly = TRUE)) {
+        stop('The h2o package is required for predicting h2o models')
+    }
+    pred <- h2o::h2o.predict(x, h2o::as.h2o(newdata))
+    h2o_model_class <- class(x)[[1]]
+    if (h2o_model_class %in% c("H2OBinomialModel", "H2OMultinomialModel")) {
+        return(as.data.frame(pred[,-1]))
+    } else if (h2o_model_class == "H2ORegressionModel") {
+        ret <- as.data.frame(pred[,1])
+        names(ret) <- "Response"
+        return(ret)
+    } else {
+        stop('This h2o model is not currently supported.')
+    }
 }
 #' @rdname model_support
 #' @export
@@ -120,3 +142,13 @@ model_type.xgb.Booster <- function(x, ...) {
   )
 }
 model_type.lda <- function(x, ...) 'classification'
+model_type.H2OModel <- function(x, ...) {
+    h2o_model_class <- class(x)[[1]]
+    if (h2o_model_class %in% c("H2OBinomialModel", "H2OMultinomialModel")) {
+        return('classification')
+    } else if (h2o_model_class == "H2ORegressionModel") {
+        return('regression')
+    } else {
+        stop('This h2o model is not currently supported.')
+    }
+}

@@ -1,4 +1,5 @@
 #' @rdname lime
+#' @name lime
 #' @param bin_continuous Should continuous variables be binned when making the explanation
 #' @param n_bins The number of bins for continuous variables if `bin_continuous = TRUE`
 #' @param quantile_bins Should the bins be based on `n_bins` quantiles or spread evenly over the range of the training data
@@ -23,22 +24,27 @@ lime.data.frame <- function(x, model, bin_continuous = TRUE, n_bins = 4, quantil
   explainer <- c(as.list(environment()), list(...))
   explainer$x <- NULL
   explainer$feature_type <- setNames(sapply(x, function(f) {
-    if (is.numeric(f)) {
+    if (is.integer(f)) {
+      'integer'
+    } else if (is.numeric(f)) {
       'numeric'
     } else if (is.character(f)) {
       'character'
     } else if (is.factor(f)) {
       'factor'
+    } else if (inherits(f, 'Date') || inherits(f, 'POSIXt')) {
+      'date_time'
     } else {
       stop('Unknown feature type', call. = FALSE)
     }
   }), names(x))
   explainer$bin_cuts <- setNames(lapply(seq_along(x), function(i) {
-    if (explainer$feature_type[i] == 'numeric') {
+    if (explainer$feature_type[i] %in% c('numeric', 'integer')) {
       if (quantile_bins) {
-        quantile(x[[i]], seq(0, 1, length.out = n_bins + 1))
+        bins <- quantile(x[[i]], seq(0, 1, length.out = n_bins + 1), na.rm = TRUE)
+        bins[!duplicated(bins)]
       } else {
-        d_range <- range(x[[i]])
+        d_range <- range(x[[i]], na.rm = TRUE)
         seq(d_range[1], d_range[2], length.out = n_bins + 1)
       }
     }
@@ -46,18 +52,21 @@ lime.data.frame <- function(x, model, bin_continuous = TRUE, n_bins = 4, quantil
   explainer$feature_distribution <- setNames(lapply(seq_along(x), function(i) {
     switch(
       explainer$feature_type[i],
+      integer = ,
       numeric = if (bin_continuous) {
         table(cut(x[[i]], unique(explainer$bin_cuts[[i]]), labels = FALSE, include.lowest = TRUE))/nrow(x)
       } else {
         c(mean = mean(x[[i]], na.rm = TRUE), sd = sd(x[[i]], na.rm = TRUE))
       },
       character = ,
-      factor = table(x[[i]])/nrow(x)
+      factor = table(x[[i]])/nrow(x),
+      NA
     )
   }), names(x))
   structure(explainer, class = c('data_frame_explainer', 'explainer', 'list'))
 }
 #' @rdname explain
+#' @name explain
 #'
 #' @param dist_fun The distance function to use for calculating the distance
 #' from the observation to the permutations. Will be forwarded to
@@ -76,9 +85,9 @@ explain.data.frame <- function(x, explainer, labels = NULL, n_labels = NULL,
   if (m_type == 'regression') {
     if (!is.null(labels) || !is.null(n_labels)) {
       warning('"labels" and "n_labels" arguments are ignored when explaining regression models')
-      n_labels <- 1
-      labels <- NULL
     }
+    n_labels <- 1
+    labels <- NULL
   }
   assert_that(is.null(labels) + is.null(n_labels) == 1, msg = "You need to choose between labels and n_labels parameters.")
   assert_that(is.count(n_features))
@@ -98,7 +107,7 @@ explain.data.frame <- function(x, explainer, labels = NULL, n_labels = NULL,
     perms <- numerify(case_perm[i, ], explainer$feature_type, explainer$bin_continuous, explainer$bin_cuts)
     dist <- c(0, dist(feature_scale(perms, explainer$feature_distribution, explainer$feature_type, explainer$bin_continuous),
                       method = dist_fun)[seq_len(n_permutations-1)])
-    res <- model_permutations(as.matrix(perms), case_res[i, ], kernel(dist), labels, n_labels, n_features, feature_select)
+    res <- model_permutations(as.matrix(perms), case_res[i, , drop = FALSE], kernel(dist), labels, n_labels, n_features, feature_select)
     res$feature_value <- unlist(case_perm[i[1], res$feature])
     res$feature_desc <- describe_feature(res$feature, case_perm[i[1], ], explainer$feature_type, explainer$bin_continuous, explainer$bin_cuts)
     guess <- which.max(abs(case_res[i[1], ]))
@@ -124,6 +133,8 @@ numerify <- function(x, type, bin_continuous, bin_cuts) {
   setNames(as.data.frame(lapply(seq_along(x), function(i) {
     if (type[i] %in% c('character', 'factor')) {
       as.numeric(x[[i]] == x[[i]][1])
+    } else if (type[i] == 'date_time') {
+      rep(0, nrow(x))
     } else {
       if (bin_continuous) {
         cuts <- bin_cuts[[i]]

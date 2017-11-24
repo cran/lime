@@ -20,6 +20,8 @@ The following shows how a random forest model is trained on the iris data set an
 
 ``` r
 library(caret)
+#> Warning in as.POSIXlt.POSIXct(Sys.time()): unknown timezone 'default/
+#> Europe/Copenhagen'
 library(lime)
 
 # Split up the data set
@@ -40,26 +42,26 @@ explanation <- explain(iris_test, explainer, n_labels = 1, n_features = 2)
 # output from the model.
 head(explanation)
 #>       model_type case  label label_prob  model_r2 model_intercept
-#> 1 classification    1 setosa          1 0.3928161       0.2506065
-#> 2 classification    1 setosa          1 0.3928161       0.2506065
-#> 3 classification    2 setosa          1 0.4073850       0.2430483
-#> 4 classification    2 setosa          1 0.4073850       0.2430483
-#> 5 classification    3 setosa          1 0.3991240       0.2463829
-#> 6 classification    3 setosa          1 0.3991240       0.2463829
+#> 1 classification    1 setosa          1 0.4079348       0.2429957
+#> 2 classification    1 setosa          1 0.4079348       0.2429957
+#> 3 classification    2 setosa          1 0.4089838       0.2410068
+#> 4 classification    2 setosa          1 0.4089838       0.2410068
+#> 5 classification    3 setosa          1 0.3910168       0.2506570
+#> 6 classification    3 setosa          1 0.3910168       0.2506570
 #>   model_prediction      feature feature_value feature_weight
-#> 1        0.7192690 Sepal.Length           5.1    0.008395256
-#> 2        0.7192690 Petal.Length           1.4    0.460267268
-#> 3        0.7293933 Sepal.Length           4.9    0.012021577
-#> 4        0.7293933 Petal.Length           1.4    0.474323339
-#> 5        0.7215491 Sepal.Length           4.7    0.011426553
-#> 6        0.7215491 Petal.Length           1.3    0.463739592
-#>          feature_desc               data prediction
-#> 1 Sepal.Length <= 5.2 5.1, 3.5, 1.4, 0.2    1, 0, 0
-#> 2 Petal.Length <= 1.6 5.1, 3.5, 1.4, 0.2    1, 0, 0
-#> 3 Sepal.Length <= 5.2 4.9, 3.0, 1.4, 0.2    1, 0, 0
-#> 4 Petal.Length <= 1.6 4.9, 3.0, 1.4, 0.2    1, 0, 0
-#> 5 Sepal.Length <= 5.2 4.7, 3.2, 1.3, 0.2    1, 0, 0
-#> 6 Petal.Length <= 1.6 4.7, 3.2, 1.3, 0.2    1, 0, 0
+#> 1        0.6983435 Sepal.Length           5.1  -0.0027991810
+#> 2        0.6983435  Petal.Width           0.2   0.4581469579
+#> 3        0.6994034  Sepal.Width           3.0  -0.0003087489
+#> 4        0.6994034  Petal.Width           0.2   0.4587053620
+#> 5        0.6898974  Sepal.Width           3.2  -0.0082078281
+#> 6        0.6898974  Petal.Width           0.2   0.4474482469
+#>               feature_desc               data prediction
+#> 1      Sepal.Length <= 5.2 5.1, 3.5, 1.4, 0.2    1, 0, 0
+#> 2       Petal.Width <= 0.4 5.1, 3.5, 1.4, 0.2    1, 0, 0
+#> 3 2.8 < Sepal.Width <= 3.0 4.9, 3.0, 1.4, 0.2    1, 0, 0
+#> 4       Petal.Width <= 0.4 4.9, 3.0, 1.4, 0.2    1, 0, 0
+#> 5 3.0 < Sepal.Width <= 3.3 4.7, 3.2, 1.3, 0.2    1, 0, 0
+#> 6       Petal.Width <= 0.4 4.7, 3.2, 1.3, 0.2    1, 0, 0
 
 # And can be visualised directly
 plot_features(explanation)
@@ -74,7 +76,13 @@ plot_features(explanation)
 Installation
 ------------
 
-`lime` is still a work in progress and is thus not available on CRAN yet. In order to try it out install it directly from GitHub:
+`lime` is available on CRAN and can be installed using the standard approach:
+
+``` r
+install.packages('lime')
+```
+
+To get the development version, install from GitHub instead:
 
 ``` r
 # install.packages('devtools')
@@ -84,4 +92,4 @@ devtools::install_github('thomasp85/lime')
 Scope
 -----
 
-The current version of `lime` has support for tabular and text data. The Python implementation has additional support for image data, which will be added to this package in time. In addition to the capabilities discussed in the *"Why Should I Trust You?": Explaining the Predictions of Any Classifier* article, this package also support regression model explanations (this has been added to the Python library as well). The global model explanation using submodular picks is not supported in either packages.
+The current version of `lime` has support for tabular and text data. The Python implementation has additional support for image data, which will be added to this package in time. In addition to the capabilities discussed in the *"Why Should I Trust You?": Explaining the Predictions of Any Classifier* article, this package also support regression model explanations (this has been added to the Python library as well). The global model explanation using submodular picks that the article discusses is not supported in either packages. It might get support once it appears in the Python version and it is clear how the authors envision it.

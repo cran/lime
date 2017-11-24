@@ -1,8 +1,8 @@
 Package: lime
 Type: Package
 Title: Local Interpretable Model-Agnostic Explanations
-Version: 0.3.0
-Date: 2017-09-14
+Version: 0.3.1
+Date: 2017-11-24
 Authors@R: c(person('Thomas Lin', 'Pedersen', role = c('cre', 'aut'), email = "thomasp85@gmail.com"),
              person('Michaël', 'Benesty', role = c('aut'), email = "michael@benesty.fr"))
 Maintainer: Thomas Lin Pedersen <thomasp85@gmail.com>
@@ -23,12 +23,12 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Imports: glmnet, stats, ggplot2, tools, stringi, Matrix, stringdist,
         Rcpp, assertthat, htmlwidgets, shiny, shinythemes
-Suggests: xgboost, testthat, mlr, text2vec, MASS, covr, knitr,
+Suggests: xgboost, testthat, mlr, h2o, text2vec, MASS, covr, knitr,
         rmarkdown, devtools
 LinkingTo: Rcpp, RcppEigen
 NeedsCompilation: yes
-Packaged: 2017-09-15 12:04:03 UTC; thomas
+Packaged: 2017-11-24 09:24:29 UTC; thomas
 Author: Thomas Lin Pedersen [cre, aut],
   Michaël Benesty [aut]
 Repository: CRAN
-Date/Publication: 2017-09-15 12:14:56 UTC
+Date/Publication: 2017-11-24 10:11:26 UTC
