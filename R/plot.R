@@ -37,14 +37,16 @@ plot_features <- function(explanation, ncol = 2) {
   description <- paste0(format(description, width = desc_width), explanation$feature_desc)
   explanation$description <- factor(description, levels = description[order(abs(explanation$feature_weight))])
   explanation$case <- factor(explanation$case, unique(explanation$case))
+  explanation$`Explanation fit` <- format(explanation$model_r2, digits = 2)
 
   if (explanation$model_type[1] == 'classification') {
     explanation$probability <- format(explanation$label_prob, digits = 2)
+    explanation$label <- factor(explanation$label, unique(explanation$label[order(explanation$label_prob, decreasing = TRUE)]))
     p <- ggplot(explanation) +
-      facet_wrap(~ case + label + probability, labeller = label_both_upper, scales = 'free', ncol = ncol)
+      facet_wrap(~ case + label + probability + `Explanation fit`, labeller = label_both_upper, scales = 'free', ncol = ncol)
   } else if (explanation$model_type[1] == 'regression') {
     p <- ggplot(explanation) +
-      facet_wrap(~ case + prediction, labeller = label_both_upper, scales = 'free', ncol = ncol)
+      facet_wrap(~ case + prediction + `Explanation fit`, labeller = label_both_upper, scales = 'free', ncol = ncol)
   }
   p +
     geom_col(aes_(~description, ~feature_weight, fill = ~type)) +
@@ -93,9 +95,8 @@ plot_explanations <- function(explanation, ...) {
     explanation$feature_desc,
     levels = rev(unique(explanation$feature_desc[order(explanation$feature, explanation$feature_value)]))
   )
-  ggplot(explanation, aes_(~case, ~feature_desc)) +
+  p <- ggplot(explanation, aes_(~case, ~feature_desc)) +
     geom_tile(aes_(fill = ~feature_weight)) +
-    facet_wrap(~label, ...) +
     scale_x_discrete('Case', expand = c(0, 0)) +
     scale_y_discrete('Feature', expand = c(0, 0)) +
     scale_fill_gradient2('Feature\nweight', low = '#8e0152', mid = '#f7f7f7', high = '#276419') +
@@ -104,6 +105,11 @@ plot_explanations <- function(explanation, ...) {
           panel.grid = element_blank(),
           legend.position = 'right',
           axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+  if (is.null(explanation$label)) {
+    p
+  } else {
+    p + facet_wrap(~label, ...)
+  }
 }
 
 theme_lime <- function(...) {
