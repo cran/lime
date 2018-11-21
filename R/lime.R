@@ -34,10 +34,14 @@ model_permutations <- function(x, y, weights, labels, n_labels, n_features, feat
     stop('All permutations have no similarity to the original observation. Try setting bin_continuous to TRUE and/or increase kernel_size', call. = FALSE)
   }
   if (!is.null(n_labels)) {
-    labels <- names(y)[order(y[1,], decreasing = TRUE)[seq_len(n_labels)]]
+    labels <- names(y)[order(as.data.frame(y)[1,], decreasing = TRUE)[seq_len(n_labels)]]
   }
   x <- x[, colSums(is.na(x)) == 0 & apply(x, 2, var) != 0, drop = FALSE]
   res <- lapply(labels, function(label) {
+
+    if (length(unique(y[[label]])) == 1) {
+      stop("Response is constant across permutations. Please check your model", call. = FALSE)
+    }
 
     features <- select_features(feature_method, x, y[[label]], weights, n_features)
 
@@ -119,6 +123,9 @@ select_f_fs <- function(x, y, weights, n_features) {
         best <- j
       }
     }
+    if (best == 0) {
+      stop('Failed to select features with forward selection. Please choose another feature selector', call. = FALSE)
+    }
     features <- c(features, best)
   }
   features
@@ -160,17 +167,11 @@ select_tree <- function(x, y, weights, n_features) {
 select_f_lp <- function(x, y, weights, n_features) {
   shuffle_order <- sample(length(y)) # glm is sensitive to the order of the examples
   fit <- glmnet(x[shuffle_order,], y[shuffle_order], weights = weights[shuffle_order], alpha = 1, nlambda = 300)
-  # In case that no model with correct n_feature size was found
-  if (all(fit$df != n_features)) {
-    stop(sprintf("No model with %i features found with lasso_path. Try a different method.", n_features))
-  }
   has_value <- apply(coef(fit)[-1, ], 2, function(x) x != 0)
   f_count <- apply(has_value, 2, sum)
-  row <- which(f_count >= n_features)[1]
+  # In case that no model with correct n_feature size was found return features <= n_features
+  row <- rev(which(f_count <= n_features))[1]
   features <- which(has_value[, row])
-  if (length(features) > n_features) {
-    features <- features[sample(seq_along(features), n_features)]
-  }
   features
 }
 exp_kernel <- function(width) {

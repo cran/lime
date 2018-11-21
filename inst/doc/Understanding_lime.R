@@ -28,10 +28,6 @@ explanation <- explain(biopsy[test_set, ], explainer, n_labels = 1, n_features =
 # Only showing part of output for better printing
 explanation[, 2:9]
 
-## ------------------------------------------------------------------------
-explanation <- explain(biopsy[test_set, ], explainer, n_labels = 1, n_features = 4, kernel_width = 0.5)
-explanation[, 2:9]
-
 ## ---- fig.asp=1.25, out.width='70%', fig.width=6, fig.align='center'-----
 plot_features(explanation, ncol = 1)
 

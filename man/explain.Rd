@@ -8,21 +8,23 @@
 \alias{explain.imagefile}
 \title{Explain model predictions}
 \usage{
-\method{explain}{character}(x, explainer, labels = NULL, n_labels = NULL,
-  n_features, n_permutations = 5000, feature_select = "auto",
-  single_explanation = FALSE, ...)
+\method{explain}{character}(x, explainer, labels = NULL,
+  n_labels = NULL, n_features, n_permutations = 5000,
+  feature_select = "auto", single_explanation = FALSE, ...)
 
-\method{explain}{data.frame}(x, explainer, labels = NULL, n_labels = NULL,
-  n_features, n_permutations = 5000, feature_select = "auto",
-  dist_fun = "gower", kernel_width = NULL, ...)
+\method{explain}{data.frame}(x, explainer, labels = NULL,
+  n_labels = NULL, n_features, n_permutations = 5000,
+  feature_select = "auto", dist_fun = "gower", kernel_width = NULL,
+  ...)
 
 explain(x, explainer, labels, n_labels = NULL, n_features,
   n_permutations = 5000, feature_select = "auto", ...)
 
-\method{explain}{imagefile}(x, explainer, labels = NULL, n_labels = NULL,
-  n_features, n_permutations = 1000, feature_select = "auto",
-  n_superpixels = 50, weight = 20, n_iter = 10, p_remove = 0.5,
-  batch_size = 10, background = "grey", ...)
+\method{explain}{imagefile}(x, explainer, labels = NULL,
+  n_labels = NULL, n_features, n_permutations = 1000,
+  feature_select = "auto", n_superpixels = 50, weight = 20,
+  n_iter = 10, p_remove = 0.5, batch_size = 10,
+  background = "grey", ...)
 }
 \arguments{
 \item{x}{New observations to explain, of the same format as used when
@@ -42,7 +44,7 @@ classifiers the top \code{n_label} classes will be explained.}
 
 \item{feature_select}{The algorithm to use for selecting features. One of:
 \itemize{
-\item \code{"auto"}: If \code{n_features &lt;= 6} use \code{"forward_selection"} else use \code{"highest_weights"}.
+\item \code{"auto"}: If \code{n_features <= 6} use \code{"forward_selection"} else use \code{"highest_weights"}.
 \item \code{"none"}: Ignore \code{n_features} and use all features.
 \item \code{"forward_selection"}: Add one feature at a time until \code{n_features} is
 reached, based on quality of a ridge regression model.

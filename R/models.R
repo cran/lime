@@ -115,12 +115,23 @@ predict_model.default <- function(x, newdata, type, ...) {
   as.data.frame(p)
 }
 #' @export
+predict_model.model_fit <- function(x, newdata, type, ...) {
+  if (type == 'raw') type <- 'numeric'
+  p <- predict(x, new_data = newdata, type = type, ...)
+  if (type == 'raw') {
+    p <- data.frame(Response = p[[1]], stringsAsFactors = FALSE)
+  } else if (type == 'prob') {
+    names(p) <- sub('.pred_', '', names(p))
+  }
+  p
+}
+#' @export
 predict_model.WrappedModel <- function(x, newdata, type, ...) {
   if (!requireNamespace('mlr', quietly = TRUE)) {
     stop('mlr must be available when working with WrappedModel models')
   }
   p <- predict(x, newdata = newdata, ...)
-  type2 <- switch(
+  switch(
     type,
     raw = data.frame(Response = mlr::getPredictionResponse(p), stringsAsFactors = FALSE),
     prob = mlr::getPredictionProbabilities(p, p$task.desc$class.levels),
@@ -132,7 +143,7 @@ predict_model.xgb.Booster <- function(x, newdata, type, ...) {
   if (!requireNamespace('xgboost', quietly = TRUE)) {
     stop('The xgboost package is required for predicting xgboost models')
   }
-  if(is.data.frame(newdata)){
+  if (is.data.frame(newdata)) {
     newdata <- xgboost::xgb.DMatrix(as.matrix(newdata))
   }
   p <- data.frame(predict(x, newdata = newdata, reshape = TRUE, ...), stringsAsFactors = FALSE)
@@ -162,7 +173,7 @@ predict_model.keras.engine.training.Model <- function(x, newdata, type, ...) {
   if (!requireNamespace('keras', quietly = TRUE)) {
     stop('The keras package is required for predicting keras models')
   }
-  res <- predict(x, newdata)
+  res <- predict(x, as.array(newdata))
   if (type == 'raw') {
     data.frame(Response = res[, 1])
   } else {
@@ -190,6 +201,27 @@ predict_model.H2OModel <- function(x, newdata, type, ...){
       stop('This h2o model is not currently supported.')
   }
 }
+#' @export
+predict_model.ranger <- function(x, newdata, type, ...) {
+  if (!requireNamespace('ranger', quietly = TRUE)) {
+    stop('The ranger package is required for predicting ranger models')
+  }
+  if (x$treetype == 'Classification') {
+    res_votes <- predict(x, data = newdata, predict.all = TRUE, ...)$predictions
+    res_votes <- t(table(res_votes, row(res_votes)))
+    classes <- colnames(x$confusion.matrix)
+    res <- matrix(0, nrow = nrow(res_votes), ncol = length(classes), dimnames = list(NULL, classes))
+    res[, as.integer(colnames(res_votes))] <- res_votes / x$num.trees
+  } else {
+    res <- predict(x, data = newdata, ...)$predictions
+  }
+  switch(
+    type,
+    raw = data.frame(Response = res),
+    prob = as.data.frame(res)
+  )
+}
+
 #' @rdname model_support
 #' @export
 model_type <- function(x, ...) {
@@ -208,6 +240,10 @@ model_type.train <- function(x, ...) {
   tolower(x$modelType)
 }
 #' @export
+model_type.model_fit <- function(x, ...) {
+  x$spec$mode
+}
+#' @export
 model_type.WrappedModel <- function(x, ...) {
   switch(
     x$learner$type,
@@ -221,6 +257,8 @@ model_type.WrappedModel <- function(x, ...) {
 #' @export
 model_type.xgb.Booster <- function(x, ...) {
   obj <- x$params$objective
+  if (is.null(obj)) return('regression')
+  if (is.function(obj)) stop('Unsupported model type', call. = FALSE)
   type <- strsplit(obj, ':')[[1]][1]
   switch(
     type,
@@ -237,7 +275,8 @@ model_type.keras.engine.training.Model <- function(x, ...) {
   if (!requireNamespace('keras', quietly = TRUE)) {
     stop('The keras package is required for predicting keras models')
   }
-  if (keras::get_layer(x, index = -1)$activation$func_name == 'linear') {
+  num_layers <- length(x$layers)
+  if (keras::get_config(keras::get_layer(x, index = num_layers))$activation == 'linear') {
     'regression'
   } else {
     'classification'
@@ -252,5 +291,16 @@ model_type.H2OModel <- function(x, ...) {
       return('regression')
   } else {
       stop('This h2o model is not currently supported.')
+  }
+}
+#' @export
+model_type.ranger <- function(x, ...) {
+  ranger_model_class <- x$treetype
+  if (ranger_model_class == "Probability estimation" || ranger_model_class == "Classification") {
+    return('classification')
+  } else if (ranger_model_class == "Regression") {
+    return('regression')
+  } else {
+    stop(paste0('ranger model class "',ranger_model_class,'" is not currently supported.'))
   }
 }
