@@ -1,3 +1,20 @@
+# lime 0.5.0
+
+* `explain()` will now pass `...` on to the relevant `predict()` method (#150)
+* `explain.data.frame()` gains a `gower_pow` argument to modify the calculated 
+  gower distance before use by raising it to the power of the given value (#158)
+* Fixed a bug when calculating R^2 on single feature explanations (@pkopper, #157)
+* Fixed formatting of text prediction html presentation (#145)
+* Fixed a bug when setting feature select method to "none" (#141)
+* Changes default colouring from green-red to blue-red (#137)
+* `lime()` now warns when quantile binning is not feasible and uses standard 
+  binning instead (#154)
+* Changed the `lambda` value in the local model fit to match the one used in the
+  Python version according to the relationship given here:
+  https://stats.stackexchange.com/a/270705
+* Added pkgdown site at https://lime.data-imaginist.com
+* Fixed a bug when using a proprocessor with data.frame explanations
+
 # lime 0.4.1
 
 * Add build-in support for `parsnip` and `ranger`

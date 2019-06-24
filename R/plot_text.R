@@ -15,8 +15,7 @@
 #' @examples
 #' # We load a precalculated explanation set based on the procedure in the ?lime
 #' # examples
-#' explanations <- readRDS(system.file('extdata', 'text_explanation.rds',
-#'                                     package = 'lime'))
+#' explanations <- .load_text_example()
 #'
 #' # We see that the explanations are in the expected format
 #' print(explanations)
@@ -61,7 +60,7 @@ plot_text_explanations <- function(explanations, ...) {
   })
 
   text_highlighted <- paste(
-    '<div style="overflow-y:scroll;font-family:sans-serif;position:absolute;height:100%">',
+    '<div style="overflow-y:scroll;font-family:sans-serif;height:100%">',
     paste("<p>", text_highlighted_raw, "</p>", collapse = "<br/>"),
     "</div>"
   )

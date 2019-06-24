@@ -7,6 +7,7 @@
 #' each word will be replaced by `word_position`.
 #'
 #' @examples
+#' \dontrun{
 #' # Explaining a model based on text data
 #'
 #' # Purpose is to classify sentences from scientific publications
@@ -39,7 +40,7 @@
 #' # on the presence of the word `we` in the sentences
 #' # which makes sense regarding the task.
 #' print(explanations)
-#'
+#' }
 #' @importFrom assertthat assert_that is.flag
 #' @export
 lime.character <- function(x, model, preprocess = NULL, tokenization = default_tokenize, keep_word_position = FALSE, ...) {
@@ -95,7 +96,7 @@ explain.character <- function(x, explainer, labels = NULL, n_labels = NULL,
     })
   }
   permutations_tokenized <- explainer$preprocess(case_perm$permutations)
-  case_res <- predict_model(x = explainer$model, newdata = permutations_tokenized, type = o_type)
+  case_res <- predict_model(x = explainer$model, newdata = permutations_tokenized, type = o_type, ...)
   case_res <- set_labels(case_res, explainer$model)
   assert_that(all(!is.na(case_res)), msg = "Predictions contains some NAs")
   assert_that(nrow(case_res) == length(case_perm$permutations), msg = "Incorrect number of predictions")
@@ -138,4 +139,14 @@ is.text_explainer <- function(x) inherits(x, 'text_explainer')
 #'
 default_tokenize <- function(text) {
   unlist(stri_split_boundaries(text, type = "word", skip_word_none = TRUE))
+}
+
+#' Load an example text explanation
+#'
+#' @return A data.frame containing an example of a text explanation
+#'
+#' @keywords internal
+#' @export
+.load_text_example <- function() {
+  readRDS(system.file('extdata', 'text_explanation.rds', package = 'lime'))
 }

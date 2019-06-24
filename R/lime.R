@@ -44,19 +44,18 @@ model_permutations <- function(x, y, weights, labels, n_labels, n_features, feat
     }
 
     features <- select_features(feature_method, x, y[[label]], weights, n_features)
-
     # glmnet does not allow n_features=1
     if (length(features) == 1) {
       x_fit = cbind("(Intercept)" = rep(1, nrow(x)), x[, features, drop = FALSE])
       fit <- glm.fit(x = x_fit, y = y[[label]],  weights = weights, family = gaussian())
-      r2 <- fit$deviance / fit$null.deviance
+      r2 <- 1 - fit$deviance / fit$null.deviance
       coefs <- coef(fit)
       intercept <- coefs[1]
       coefs <- coefs[-1]
       model_pred <- fit$fitted.values[1]
     } else {
       shuffle_order <- sample(length(y[[label]])) # glm is sensitive to the order of the examples
-      fit <- glmnet(x[shuffle_order, features], y[[label]][shuffle_order], weights = weights[shuffle_order], alpha = 0, lambda = 0.001)
+      fit <- glmnet(x[shuffle_order, features], y[[label]][shuffle_order], weights = weights[shuffle_order], alpha = 0, lambda = 2 / length(y[[label]]))
       r2 <- fit$dev.ratio
       coefs <- coef(fit)
       intercept <- coefs[1, 1]
@@ -93,7 +92,7 @@ select_features <- function(method, x, y, weights, n_features) {
     } else {
       select_features("highest_weights", x, y, weights, n_features)
     },
-    none = seq_len(nrow(x)),
+    none = seq_len(ncol(x)),
     forward_selection = select_f_fs(x, y, weights, n_features),
     highest_weights = select_f_hw(x, y, weights, n_features),
     lasso_path = select_f_lp(x, y, weights, n_features),
@@ -113,7 +112,7 @@ select_f_fs <- function(x, y, weights, n_features) {
       if (length(features) == 0) {
         x_fit = cbind("(Intercept)" = rep(1, nrow(x)), x[, j, drop = FALSE])
         fit <- glm.fit(x = x_fit, y = y,  weights = weights, family = gaussian())
-        r2 <- fit$deviance / fit$null.deviance
+        r2 <- 1 - fit$deviance / fit$null.deviance
       } else {
         fit <- glmnet(x[, c(features, j), drop = FALSE], y, weights = weights, alpha = 0, lambda = 0)
         r2 <- fit$dev.ratio

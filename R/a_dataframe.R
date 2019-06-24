@@ -50,7 +50,13 @@ lime.data.frame <- function(x, model, preprocess = NULL, bin_continuous = TRUE, 
     if (explainer$feature_type[i] %in% c('numeric', 'integer')) {
       if (quantile_bins) {
         bins <- quantile(x[[i]], seq(0, 1, length.out = n_bins + 1), na.rm = TRUE)
-        bins[!duplicated(bins)]
+        bins <- bins[!duplicated(bins)]
+        if (length(bins) < 3) {
+          warning(names(x)[i], ' does not contain enough variance to use quantile binning. Using standard binning instead.', call. = FALSE)
+          d_range <- range(x[[i]], na.rm = TRUE)
+          bins <- seq(d_range[1], d_range[2], length.out = n_bins + 1)
+        }
+        bins
       } else {
         d_range <- range(x[[i]], na.rm = TRUE)
         seq(d_range[1], d_range[2], length.out = n_bins + 1)
@@ -85,6 +91,8 @@ lime.data.frame <- function(x, model, preprocess = NULL, bin_continuous = TRUE, 
 #' [stats::dist()]
 #' @param kernel_width The width of the exponential kernel that will be used to
 #' convert the distance to a similarity in case `dist_fun != 'gower'`.
+#' @param gower_pow A modifier for gower distance. The calculated distance will
+#' be raised to the power of this value.
 #'
 #' @importFrom gower gower_dist
 #' @importFrom stats dist
@@ -92,7 +100,7 @@ lime.data.frame <- function(x, model, preprocess = NULL, bin_continuous = TRUE, 
 explain.data.frame <- function(x, explainer, labels = NULL, n_labels = NULL,
                                n_features, n_permutations = 5000,
                                feature_select = 'auto', dist_fun = 'gower',
-                               kernel_width = NULL, ...) {
+                               kernel_width = NULL, gower_pow = 1, ...) {
   assert_that(is.data_frame_explainer(explainer))
   m_type <- model_type(explainer)
   o_type <- output_type(explainer)
@@ -115,13 +123,13 @@ explain.data.frame <- function(x, explainer, labels = NULL, n_labels = NULL,
   case_perm <- permute_cases(x, n_permutations, explainer$feature_distribution,
                              explainer$bin_continuous, explainer$bin_cuts,
                              explainer$use_density)
-  case_res <- predict_model(explainer$preprocess(explainer$model), case_perm, type = o_type)
+  case_res <- predict_model(explainer$model, explainer$preprocess(case_perm), type = o_type, ...)
   case_res <- set_labels(case_res, explainer$model)
   case_ind <- split(seq_len(nrow(case_perm)), rep(seq_len(nrow(x)), each = n_permutations))
   res <- lapply(seq_along(case_ind), function(ind) {
     i <- case_ind[[ind]]
     if (dist_fun == 'gower') {
-      sim <- 1 - gower_dist(case_perm[i[1], , drop = FALSE], case_perm[i, , drop = FALSE])
+      sim <- 1 - (gower_dist(case_perm[i[1], , drop = FALSE], case_perm[i, , drop = FALSE])) ^ gower_pow
     }
     perms <- numerify(case_perm[i, ], explainer$feature_type, explainer$bin_continuous, explainer$bin_cuts)
     if (dist_fun != 'gower') {
@@ -160,7 +168,7 @@ numerify <- function(x, type, bin_continuous, bin_cuts) {
       if (bin_continuous) {
         cuts <- bin_cuts[[i]]
         cuts[1] <- -Inf
-        cuts[length(cuts)] <- Inf
+        cuts[length(cuts) + 1] <- Inf
         xi <- cut(x[[i]], unique(cuts), include.lowest = T)
         as.numeric(xi == xi[1])
       } else {

@@ -43,11 +43,11 @@ plot_features <- function(explanation, ncol = 2, cases = NULL) {
   if (explanation$model_type[1] == 'regression') {
     type_pal <- c('Positive', 'Negative')
     binned_feature <- grepl("=|>|<", explanation$feature_desc)
-    explanation[!binned_feature, "feature_weight"] <- as.numeric(explanation[!binned_feature, "feature_value"]) * explanation[!binned_feature, "feature_weight"]
+    explanation[!binned_feature, "feature_weight"] <- as.numeric(explanation$feature_value[!binned_feature]) * explanation$feature_weight[!binned_feature]
   }
 
   explanation$type <- factor(ifelse(sign(explanation$feature_weight) == 1, type_pal[1], type_pal[2]), levels = type_pal)
-  description <- paste0(explanation$case, '_', explanation$label)
+  description <- paste0(explanation$case, '_', explanation[['label']])
   desc_width <- max(nchar(description)) + 1
   description <- paste0(format(description, width = desc_width), explanation$feature_desc)
   explanation$description <- factor(description, levels = description[order(abs(explanation$feature_weight))])
@@ -66,8 +66,8 @@ plot_features <- function(explanation, ncol = 2, cases = NULL) {
   p +
     geom_col(aes_(~description, ~feature_weight, fill = ~type)) +
     coord_flip() +
-    scale_fill_manual(values = c('forestgreen', 'firebrick'), drop = FALSE) +
-    scale_x_discrete(labels = function(lab) substr(lab, desc_width+1, nchar(lab))) +
+    scale_fill_manual(values = c('steelblue', 'firebrick'), drop = FALSE) +
+    scale_x_discrete(labels = function(lab) substr(lab, desc_width + 1, nchar(lab))) +
     labs(y = 'Weight', x = 'Feature', fill = '') +
     theme_lime()
 }
@@ -92,9 +92,9 @@ plot_features <- function(explanation, ncol = 2, cases = NULL) {
 #' @examples
 #' # Create some explanations
 #' library(MASS)
-#' iris_test <- iris[1, 1:4]
-#' iris_train <- iris[-1, 1:4]
-#' iris_lab <- iris[[5]][-1]
+#' iris_test <- iris[c(1, 51, 101), 1:4]
+#' iris_train <- iris[-c(1, 51, 101), 1:4]
+#' iris_lab <- iris[[5]][-c(1, 51, 101)]
 #' model <- lda(iris_train, iris_lab)
 #' explanation <- lime(iris_train, model)
 #' explanations <- explain(iris_test, explanation, n_labels = 1, n_features = 2)
@@ -114,7 +114,7 @@ plot_explanations <- function(explanation, ...) {
     geom_tile(aes_(fill = ~feature_weight)) +
     scale_x_discrete('Case', expand = c(0, 0)) +
     scale_y_discrete('Feature', expand = c(0, 0)) +
-    scale_fill_gradient2('Feature\nweight', low = '#8e0152', mid = '#f7f7f7', high = '#276419') +
+    scale_fill_gradient2('Feature\nweight', low = 'firebrick', mid = '#f7f7f7', high = 'steelblue') +
     theme_lime() +
     theme(panel.border = element_rect(fill = NA, colour = 'grey60', size = 1),
           panel.grid = element_blank(),

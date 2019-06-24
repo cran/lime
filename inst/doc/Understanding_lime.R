@@ -104,5 +104,5 @@ plot_text_explanations(explanation)
 #  interactive_text_explanations(explainer)
 
 ## ---- echo=FALSE---------------------------------------------------------
-devtools::session_info()
+sessioninfo::session_info()
 
