@@ -1,3 +1,7 @@
+# lime 0.5.1
+
+* Fixed namespace import from glmnet following changes there
+
 # lime 0.5.0
 
 * `explain()` will now pass `...` on to the relevant `predict()` method (#150)
