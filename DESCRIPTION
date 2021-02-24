@@ -1,7 +1,7 @@
 Package: lime
 Type: Package
 Title: Local Interpretable Model-Agnostic Explanations
-Version: 0.5.1
+Version: 0.5.2
 Authors@R: 
     c(person(given = "Thomas Lin",
              family = "Pedersen",
@@ -26,18 +26,18 @@ URL: https://lime.data-imaginist.com, https://github.com/thomasp85/lime
 BugReports: https://github.com/thomasp85/lime/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Imports: glmnet, stats, ggplot2, tools, stringi, Matrix, Rcpp,
-        assertthat, htmlwidgets, shiny, shinythemes, methods,
-        grDevices, gower
+        assertthat, methods, grDevices, gower
 Suggests: xgboost, testthat, mlr, h2o, text2vec, MASS, covr, knitr,
-        rmarkdown, sessioninfo, magick, keras, ranger
+        rmarkdown, sessioninfo, magick, keras, htmlwidgets, shiny,
+        shinythemes, ranger
 LinkingTo: Rcpp, RcppEigen
 NeedsCompilation: yes
-Packaged: 2019-11-12 07:34:00 UTC; thomas
+Packaged: 2021-02-24 11:20:57 UTC; thomas
 Author: Thomas Lin Pedersen [cre, aut]
     (<https://orcid.org/0000-0002-5147-4711>),
   Michaël Benesty [aut]
 Repository: CRAN
-Date/Publication: 2019-11-12 08:20:02 UTC
+Date/Publication: 2021-02-24 12:00:02 UTC

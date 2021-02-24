@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(MASS)
 library(lime)
 data(biopsy)
@@ -19,19 +19,19 @@ prediction <- biopsy$class
 biopsy$class <- NULL
 model <- lda(biopsy[-test_set, ], prediction[-test_set])
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 predict(model, biopsy[test_set, ])
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 explainer <- lime(biopsy[-test_set,], model, bin_continuous = TRUE, quantile_bins = FALSE)
 explanation <- explain(biopsy[test_set, ], explainer, n_labels = 1, n_features = 4)
 # Only showing part of output for better printing
 explanation[, 2:9]
 
-## ---- fig.asp=1.25, out.width='70%', fig.width=6, fig.align='center'-----
+## ---- fig.asp=1.25, out.width='70%', fig.width=6, fig.align='center'----------
 plot_features(explanation, ncol = 1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(lime)
 library(xgboost) # the classifier
 library(text2vec) # used to build the BoW matrix
@@ -72,7 +72,7 @@ xgb_model <- xgb.train(
   nrounds = 50
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # We use a (standard) threshold of 0.5
 predictions <- predict(xgb_model, dtm_test) > 0.5
 test_labels <- test_sentences$class.text == "OWNX"
@@ -80,7 +80,7 @@ test_labels <- test_sentences$class.text == "OWNX"
 # Accuracy
 print(mean(predictions == test_labels))
 
-## ---- fig.asp=1, out.width='70%', fig.width=6, fig.align='center'--------
+## ---- fig.asp=1, out.width='70%', fig.width=6, fig.align='center'-------------
 # We select 10 sentences from the label OWNX
 sentence_to_explain <- head(test_sentences[test_labels,]$text, 5)
 explainer <- lime(sentence_to_explain, model = xgb_model, 
@@ -96,13 +96,13 @@ explanation[, 2:9]
 # Another more graphical view of the same information (2 first sentences only)
 plot_features(explanation)
 
-## ------------------------------------------------------------------------
-plot_text_explanations(explanation)
+## ---- eval=FALSE--------------------------------------------------------------
+#  plot_text_explanations(explanation)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # Launching the application is done in one command
 #  interactive_text_explanations(explainer)
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 sessioninfo::session_info()
 
