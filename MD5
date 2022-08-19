@@ -1,7 +1,7 @@
-039a9a9c8847d83a368bcbbc0350e653 *DESCRIPTION
+6aceddcb420777f3debd15fe8d6713f8 *DESCRIPTION
 390aa971d748d2d8595f400ac17045c9 *LICENSE
 3c144a8d32f0f166521a79bf8eb21e63 *NAMESPACE
-48de708879fa88f3aadf8a402d6eea47 *NEWS.md
+822fa12e210f934df0192ee99b6aeb58 *NEWS.md
 8cc13692a727c7ed3e3fe34042ed624d *R/RcppExports.R
 eb17bd25391377e77a8dd7af175aba42 *R/a_dataframe.R
 8ba0a44ae350243d7c2b6623b6b2fad3 *R/character.R
@@ -17,8 +17,8 @@ a68825fcc0b431a5a6da70201ed4ab09 *R/models.R
 99162b4214d449670a54796d3593a862 *R/plot_text.R
 a02250c1a473789361d3448fca3185fb *R/shiny.R
 0ac6dcce03bec01e28c9f1f191f174e0 *R/tibble_shim.R
-d9eb7794ecc2c5f1b1e7d76c58bb3a45 *README.md
-2022f8aab89af2557b81ca812b46f464 *build/vignette.rds
+be0024bc0608975ba02908aa8cf391bb *README.md
+936dd0605e817d99b7c9499f90cb0075 *build/vignette.rds
 bb216a68df6b28df19df69fe86ef1f29 *data/stop_words_sentences.rda
 2905ebb29f46eee69ca5196218f43e2e *data/test_sentences.rda
 4bb200d05593aaab3f4627641646fab7 *data/train_sentences.rda
@@ -26,7 +26,7 @@ e57448ac8f11133dac3dc06d40706409 *demo/00Index
 f76551c180854a9eff9b8cef7e8395c4 *demo/text_classification_explanation.R
 6104ab832b1844f1c95424eb4cb8392b *inst/doc/Understanding_lime.R
 49bc6248ad424616783a2280dd616606 *inst/doc/Understanding_lime.Rmd
-7cc5f136798f56401bd458bbc0a0f726 *inst/doc/Understanding_lime.html
+8b10df82bc6fed1269f12dcdeee9303c *inst/doc/Understanding_lime.html
 a818ddb3e88bc2f193182dfcd90f8f40 *inst/extdata/image_explanation.rds
 bd9e749176cdb3b7cc034a1c4dff46c7 *inst/extdata/imagenet_labels.rds
 c9f88e38d524b17635071ed3c83fee21 *inst/extdata/produce.png
@@ -39,13 +39,13 @@ e112cd9ce9ddbc5fd220ab5c31909907 *man/default_tokenize.Rd
 399d7004cdba04e37a6bb085a5948285 *man/dot-load_image_example.Rd
 e19dc0095ddbda3dabb067079bfa101c *man/dot-load_text_example.Rd
 29bf6e701dfecbfb9236c490f4fd5dc9 *man/explain.Rd
-9c9a23d9feecd55689d1924039f9de60 *man/figures/README-unnamed-chunk-2-1.png
-80e17758e50ce75fdb25930649e3dd45 *man/figures/README-unnamed-chunk-3-1.png
+63969d3c259e64f62673e1d49cc670a7 *man/figures/README-unnamed-chunk-2-1.png
+1b09a7be02a79891c4b88212d9900a4c *man/figures/README-unnamed-chunk-3-1.png
 bbb7a64da401d940d1182026284f882b *man/figures/logo.png
 119a3528f5abbdafcf4e1da10d3893da *man/figures/logo.svg
 2c28236764940b42c038f040207c62b5 *man/figures/shine_text_explanations.gif
 19ac7f3669fe4f6c4eb56bc8157e482f *man/interactive_text_explanations.Rd
-28c81850d520a4e916ca0cf8b8ff2b32 *man/lime-package.Rd
+a492832f5e4cc822b4ab1d6f57972fe3 *man/lime-package.Rd
 fd876d1ebfcfa5a47c828a7bb1e948a0 *man/lime.Rd
 5c53aa7d39549c552c2d2649eeb9f0d9 *man/model_support.Rd
 45bd5af77cd8a9d1b971a8ea5cbf359b *man/plot_explanations.Rd
@@ -57,7 +57,7 @@ b4538d62926de2c3d84de6ccafadbf3e *man/slic.Rd
 fdf46f4f87ed2cb6a043df87573c3ba2 *man/test_sentences.Rd
 fac37f39ac9a1ac17ba6490a612a7e0e *man/text_explanations.Rd
 1215ba232d4ba3fbbc93c9a306ac8ffa *man/train_sentences.Rd
-8e14377e633f57990dfbafd83a35e7b8 *src/RcppExports.cpp
+efc1ebaa093a317aabfb9ce93aea5ef8 *src/RcppExports.cpp
 c658a35023b7a9e387e680bd2f6166b1 *src/cosine_similarity.cpp
 0067839cdfbc1dd9d860dfe49b4cf91d *src/lime_types.h
 8cd2b2474e8d1595ca275036dbfb7b02 *src/permutations.cpp
