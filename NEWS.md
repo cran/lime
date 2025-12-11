@@ -1,3 +1,7 @@
+# lime 0.5.4
+
+* Make package work with all versions of xgboost. (#202)
+
 # lime 0.5.3
 
 * Emil Hvitfelt is taking over maintenance
