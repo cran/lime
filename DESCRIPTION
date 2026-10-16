@@ -1,7 +1,7 @@
 Type: Package
 Package: lime
 Title: Local Interpretable Model-Agnostic Explanations
-Version: 0.5.4
+Version: 0.5.5
 Authors@R: c(
     person("Emil", "Hvitfeldt", , "emil.hvitfeldt@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-0679-1945")),
@@ -37,11 +37,11 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 NeedsCompilation: yes
-Packaged: 2025-12-10 00:24:27 UTC; emilhvitfeldt
+Packaged: 2026-10-16 03:25:11 UTC; emilhvitfeldt
 Author: Emil Hvitfeldt [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-0679-1945>),
   Thomas Lin Pedersen [aut] (ORCID:
     <https://orcid.org/0000-0002-5147-4711>),
   Michaël Benesty [aut]
 Repository: CRAN
-Date/Publication: 2025-12-11 16:00:02 UTC
+Date/Publication: 2026-10-16 03:50:02 UTC
